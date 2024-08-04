@@ -19,8 +19,9 @@ class Patient extends Model
         'date_of_birth',
         'address',
     ];
- 
-    //Patient||Admissions:
+
+    // Define relationships if necessary
+    // For example, if Patient has many Admissions:
     public function admissions()
     {
         return $this->hasMany(Admission::class);
