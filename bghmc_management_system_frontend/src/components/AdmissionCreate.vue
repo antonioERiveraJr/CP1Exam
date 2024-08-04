@@ -15,10 +15,11 @@
         <input v-model="admission.datetime_of_admission" type="datetime-local" id="datetime_of_admission" />
       </div>
       <div v-if="existingAdmission" class="existing-admission-info">
-        <p>This patient is already admitted:</p>
-        <p><strong>Ward:</strong> {{ existingAdmission.ward }}</p>
-        <p><strong>Admission Date:</strong> {{ formatDate(existingAdmission.datetime_of_admission) }}</p>
-      </div>
+  <p>This patient is already admitted:</p>
+  <p><strong>Ward:</strong> {{ existingAdmission.ward }}</p>
+  <p><strong>Admission Date:</strong> {{ formatDate(existingAdmission.datetime_of_admission) }}</p>
+</div>
+
       <div class="form-actions">
         <button v-if="!existingAdmission" type="submit">Create Admission</button>
         <router-link to="/home" class="btn-back">Back</router-link>
@@ -47,20 +48,28 @@ export default {
       return new Date(dateTime).toLocaleString();
     },
     checkExistingAdmission() {
-      axios.get(`http://localhost:8000/api/admissions?patient_id=${this.admission.patient_id}`)
-        .then(response => {
-          const ongoingAdmission = response.data.find(admission => !admission.datetime_of_discharge);
-          if (ongoingAdmission) {
-            this.existingAdmission = ongoingAdmission;
-          } else {
-            this.createAdmission();
-          }
-        })
-        .catch(error => {
-          console.error('Error checking existing admission:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to check existing admission. Please try again later.';
-        });
-    },
+  // Fetch admissions where patient_id matches
+  axios.get(`http://localhost:8000/api/admissions?patient_id=${this.admission.patient_id}`)
+    .then(response => {
+      // Check if any record has datetime_of_discharge as null
+      const hasOngoingAdmission = response.data.some(admission => admission.patient_id === this.admission.patient_id && admission.datetime_of_discharge === null);
+
+      if (hasOngoingAdmission) {
+        // If any ongoing admission is found, show a message
+        alert('This patient already has an ongoing admission. Cannot create another admission.');
+      } else {
+        // Proceed with creating a new admission if no ongoing admission is found
+        this.createAdmission();
+      }
+    })
+    .catch(error => {
+      console.error('Error checking existing admission:', error.response ? error.response.data : error.message);
+      this.error = 'Failed to check existing admission. Please try again later.';
+    });
+}
+
+,
+
     createAdmission() {
       axios.post('http://localhost:8000/api/admissions', this.admission)
         .then(() => {

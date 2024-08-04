@@ -12,7 +12,13 @@
       />
       <router-link to="/patients/create" class="btn-create">Create New Patient</router-link>
     </div>
-    <ul class="patient-list-items">
+
+    <div v-if="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <span>Loading patients...</span>
+    </div>
+
+    <ul v-if="!loading" class="patient-list-items">
       <li v-for="patient in filteredPatients" :key="patient.id" class="patient-item">
         <div class="patient-details">
           <span 
@@ -50,6 +56,8 @@ export default {
       error: null,
       selectedPatient: null,
       ongoingAdmission: null,
+      loading: false,
+      intervalId: null,
     };
   },
   computed: {
@@ -65,13 +73,16 @@ export default {
       return new Date(dateTime).toLocaleString();
     },
     fetchPatients() {
+      this.loading = true;
       axios.get('http://localhost:8000/api/patients')
         .then(response => {
           this.patients = response.data;
+          this.loading = false;
         })
         .catch(error => {
           console.error('Error fetching patients:', error.response ? error.response.data : error.message);
           this.error = 'Failed to load patients. Please try again later.';
+          this.loading = false;
         });
     },
     fetchOngoingAdmission(patientId) {
@@ -106,10 +117,17 @@ export default {
           console.error('Error deleting patient:', error.response ? error.response.data : error.message);
           this.error = 'Failed to delete patient. Please try again later.';
         });
+    },
+    refreshPatients() {
+      this.fetchPatients();
     }
   },
   created() {
     this.fetchPatients();
+    this.intervalId = setInterval(this.refreshPatients, 30000); // Refresh every 5 seconds
+  },
+  beforeUnmount() {
+    clearInterval(this.intervalId); // Clear the interval when the component is unmounted
   }
 };
 </script>
@@ -226,5 +244,29 @@ export default {
 .error-message {
   color: #dc3545;
   margin-top: 10px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  font-size: 16px;
+  color: #007bff;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 4px solid rgba(0, 123, 255, 0.3);
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
