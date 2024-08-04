@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('suffix_name')->nullable();
             $table->date('date_of_birth');
             $table->text('address');
-            $table->timestamps();
+            $table->timestacdps();
         });
     }
  
