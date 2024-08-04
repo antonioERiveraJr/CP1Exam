@@ -1,6 +1,10 @@
 <template>
   <div class="admission-list">
-    <button @click="goBack" class="btn-back">Back to Home</button>
+    <div class="header">
+      <button @click="goBack" class="btn-back">Back to Home</button>
+      <button @click="navigateToAdmitPatient" class="btn-admit-patient">Admit Patient</button>
+    </div>
+
     <h2>Admissions</h2>
 
     <div class="search-container">
@@ -99,6 +103,9 @@ export default {
     goBack() {
       this.$router.push('/home');
     },
+    navigateToAdmitPatient() {
+      this.$router.push('/patients');
+    },
     toggleDischarged() {
       this.showDischarged = !this.showDischarged;
     },
@@ -133,8 +140,13 @@ export default {
   position: relative;
 }
 
-.btn-back, .btn-search, .btn-toggle {
-  margin-bottom: 10px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px; /* Spacing below the buttons */
+}
+
+.btn-back, .btn-search, .btn-toggle, .btn-admit-patient {
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -150,6 +162,16 @@ export default {
 
 .btn-back:hover {
   background-color: #c82333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-admit-patient {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-admit-patient:hover {
+  background-color: #0056b3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
