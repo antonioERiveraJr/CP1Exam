@@ -54,6 +54,12 @@ const routes = [
     component: AdmissionCreate,
   },
   {
+    path: '/admissions/create/:patientId?',
+    name: 'AdmissionCreate',
+    component: AdmissionCreate,
+    props: true,
+  },
+  {
     path: '/admissions/discharge/:id',
     name: 'AdmissionDischarge',
     component: AdmissionDischarge,
@@ -66,6 +72,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
 
 // Add a navigation guard for authentication
 router.beforeEach((to, from, next) => {
