@@ -8,7 +8,7 @@
       <p><strong>Date of Birth:</strong> {{ formatDate(patient.date_of_birth) }}</p>
       <p><strong>Address:</strong> {{ patient.address }}</p>
 
-      <div v-if="ongoingAdmission" class="admission-info">
+      <div v-if="ongoingAdmission && ongoingAdmission.patient_id === patient.id && !ongoingAdmission.datetime_of_discharge" class="admission-info">
         <h3>Ongoing Admission</h3>
         <p><strong>Ward:</strong> {{ ongoingAdmission.ward }}</p>
         <p><strong>Admission Date:</strong> {{ formatDate(ongoingAdmission.datetime_of_admission) }}</p>
@@ -18,8 +18,13 @@
       </div>
 
       <div class="patient-actions">
+        <!-- Edit button always visible -->
         <router-link :to="{ name: 'PatientEdit', params: { id: patient.id } }" class="btn-edit">Edit</router-link>
-        <button @click="admitPatient" class="btn-admit">Admit Patient</button>
+        
+        <!-- Conditional buttons for Admit and Delete -->
+        <div v-if="!ongoingAdmission || (ongoingAdmission.patient_id !== patient.id || ongoingAdmission.datetime_of_discharge)">
+          <button @click="admitPatient" class="btn-admit">Admit Patient</button>
+        </div>
         <button @click="showDeleteModal" class="btn-delete">Delete</button>
       </div>
     </div>
@@ -56,67 +61,93 @@ export default {
       return this.$route.params.id;
     }
   },
-  methods: {
-    formatDate(dateTime) {
-      return new Date(dateTime).toLocaleString();
-    },
-    fetchPatient() {
-      axios.get(`http://localhost:8000/api/patients/${this.patientId}`)
-        .then(response => {
-          this.patient = response.data;
-          this.fetchOngoingAdmission();
-        })
-        .catch(error => {
-          console.error('Error fetching patient:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to load patient details. Please try again later.';
-        });
-    },
-    fetchOngoingAdmission() {
-      axios.get(`http://localhost:8000/api/admissions?patient_id=${this.patientId}`)
-        .then(response => {
-          const ongoingAdmission = response.data.find(admission => !admission.datetime_of_discharge);
-          this.ongoingAdmission = ongoingAdmission || null;
-        })
-        .catch(error => {
-          console.error('Error fetching admissions:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to check admissions. Please try again later.';
-        });
-    },
-    admitPatient() {
-      if (!this.ongoingAdmission) {
-        this.$router.push({ name: 'AdmissionCreate', params: { patientId: this.patientId } });
-      } else {
-        this.error = 'Patient is already admitted.';
-      }
-    },
-    showDeleteModal() {
-      this.showModal = true;
-    },
-    cancelDeletion() {
-      this.showModal = false;
-      this.password = '';
-    },
-    confirmDeletion() {
-      // Replace this with actual password verification logic
-      if (this.password === 'admin') {
-        axios.delete(`http://localhost:8000/api/patients/${this.patientId}`)
-          .then(() => {
-            this.$router.push('/patients');
+    methods: {
+      formatDate(dateTime) {
+        return new Date(dateTime).toLocaleString();
+      },
+      fetchPatient() {
+        axios.get(`http://localhost:8000/api/patients/${this.patientId}`)
+          .then(response => {
+            this.patient = response.data;
+            this.fetchOngoingAdmission();
           })
           .catch(error => {
-            console.error('Error deleting patient:', error.response ? error.response.data : error.message);
-            this.error = 'Failed to delete patient. Please try again later.';
+            console.error('Error fetching patient:', error.response ? error.response.data : error.message);
+            this.error = 'Failed to load patient details. Please try again later.';
           });
+      },
+      fetchOngoingAdmission() {
+    axios.get(`http://localhost:8000/api/admissions?patient_id=${this.patientId}`)
+  
+    
+
+    .then(response => {
+  const ongoingAdmissions = response.data.filter(admission => !admission.datetime_of_discharge);
+  console.log(`Filtered ongoingAdmissions length: ${ongoingAdmissions.length}`);
+
+  const maxAttempts = 10;
+  let checkAllData = 0;
+  let found = false;
+  let counter = 0;
+
+  while (checkAllData < maxAttempts) {
+    const admission = ongoingAdmissions[checkAllData];
+    console.log(`Checking index: ${checkAllData}, Admission: ${JSON.stringify(admission)}`); // Debugging statement
+    counter++;
+
+    if (admission && admission.patient_id === this.patient.id) {
+      this.ongoingAdmission = admission;
+      found = true;
+      break; // Exit loop if a valid admission is found
+    }
+
+    checkAllData++;
+  }
+
+  console.log(`Total iterations: ${counter}`);
+      if (!found) {
+        this.ongoingAdmission = null;
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching admissions:', error.response ? error.response.data : error.message);
+      this.error = 'Failed to check admissions. Please try again later.';
+    });
+
+      },
+      admitPatient() {
+      
+          this.$router.push({ name: 'AdmissionCreate', params: { patientId: this.patientId } });
+      
+      },
+      showDeleteModal() {
+        this.showModal = true;
+      },
+      cancelDeletion() {
         this.showModal = false;
         this.password = '';
-      } else {
-        this.error = 'Incorrect password. Please try again.';
-        setTimeout(() => {
-            this.error = null;
-          }, 2000);
+      },
+      confirmDeletion() {
+        // Replace this with actual password verification logic
+        if (this.password === 'admin') {
+          axios.delete(`http://localhost:8000/api/patients/${this.patientId}`)
+            .then(() => {
+              this.$router.push('/patients');
+            })
+            .catch(error => {
+              console.error('Error deleting patient:', error.response ? error.response.data : error.message);
+              this.error = 'Failed to delete patient. Please try again later.';
+            });
+          this.showModal = false;
+          this.password = '';
+        } else {
+          this.error = 'Incorrect password. Please try again.';
+          setTimeout(() => {
+              this.error = null;
+            }, 2000);
+        }
       }
-    }
-  },
+    },
   created() {
     this.fetchPatient();
   }
