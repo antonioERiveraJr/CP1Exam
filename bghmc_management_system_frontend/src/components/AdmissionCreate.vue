@@ -66,17 +66,19 @@ export default {
 
       // Validate fields
       if (!this.admission.ward) {
-        this.errors.ward = 'Ward is required.';
-        setTimeout(() => {
-            this.error = null;
-          }, 2000);
-        return;
+      this.errors.ward = 'Ward is required.';
+      setTimeout(() => {
+        this.errors.ward = null;
+      }, 2000);
+      return;
       }
       if (!this.admission.datetime_of_admission) {
-        this.errors.datetime_of_admission = 'Date & Time of Admission is required.';
-        setTimeout(() => {
-            this.error = null;
-          }, 2000);
+      this.errors.datetime_of_admission = 'Date & Time of Admission is required.';
+      
+      setTimeout(() => {
+        console.log('Clearing error...');
+        this.errors.datetime_of_admission = null;
+      }, 2000);
         return;
       }
 

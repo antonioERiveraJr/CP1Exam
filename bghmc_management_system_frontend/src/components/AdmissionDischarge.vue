@@ -62,6 +62,9 @@ export default {
         .catch(error => {
           console.error('Error fetching admission details:', error.response ? error.response.data : error.message);
           this.error = 'Failed to load admission details. Please try again later.';
+          setTimeout(() => {
+            this.error = null;
+          }, 2000);
           this.loading = false;
         });
     },
@@ -91,6 +94,9 @@ export default {
         });
       } else {
         this.error = 'Please enter a valid discharge date and time.';
+        setTimeout(() => {
+            this.error = null;
+          }, 2000);
       }
     },
     goBack() {
