@@ -9,20 +9,27 @@
       <div class="form-group">
         <label for="ward">Ward:</label>
         <input v-model="admission.ward" type="text" id="ward" />
+        <span v-if="errors.ward" class="error-message">{{ errors.ward }}</span>
       </div>
       <div class="form-group">
         <label for="datetime_of_admission">Date & Time of Admission:</label>
         <input v-model="admission.datetime_of_admission" type="datetime-local" id="datetime_of_admission" />
+        <span v-if="errors.datetime_of_admission" class="error-message">{{ errors.datetime_of_admission }}</span>
       </div>
       <div v-if="existingAdmission" class="existing-admission-info">
-  <p>This patient is already admitted:</p>
-  <p><strong>Ward:</strong> {{ existingAdmission.ward }}</p>
-  <p><strong>Admission Date:</strong> {{ formatDate(existingAdmission.datetime_of_admission) }}</p>
-</div>
-
+        <p>This patient is already admitted:</p>
+        <p><strong>Ward:</strong> {{ existingAdmission.ward }}</p>
+        <p><strong>Admission Date:</strong> {{ formatDate(existingAdmission.datetime_of_admission) }}</p>
+      </div>
       <div class="form-actions">
         <button v-if="!existingAdmission" type="submit">Create Admission</button>
         <router-link to="/home" class="btn-back">Back</router-link>
+      </div>
+      <div v-if="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+      <div v-if="error" class="error-message">
+        {{ error }}
       </div>
     </form>
   </div>
@@ -40,7 +47,12 @@ export default {
         datetime_of_admission: ''
       },
       existingAdmission: null,
-      error: null
+      error: null,
+      successMessage: null,
+      errors: {
+        ward: null,
+        datetime_of_admission: null
+      }
     };
   },
   methods: {
@@ -48,36 +60,61 @@ export default {
       return new Date(dateTime).toLocaleString();
     },
     checkExistingAdmission() {
-  // Fetch admissions where patient_id matches
-  axios.get(`http://localhost:8000/api/admissions?patient_id=${this.admission.patient_id}`)
-    .then(response => {
-      // Check if any record has datetime_of_discharge as null
-      const hasOngoingAdmission = response.data.some(admission => admission.patient_id === this.admission.patient_id && admission.datetime_of_discharge === null);
+      // Reset errors
+      this.errors.ward = null;
+      this.errors.datetime_of_admission = null;
 
-      if (hasOngoingAdmission) {
-        // If any ongoing admission is found, show a message
-        alert('This patient already has an ongoing admission. Cannot create another admission.');
-      } else {
-        // Proceed with creating a new admission if no ongoing admission is found
-        this.createAdmission();
+      // Validate fields
+      if (!this.admission.ward) {
+        this.errors.ward = 'Ward is required.';
+        setTimeout(() => {
+            this.error = null;
+          }, 2000);
+        return;
       }
-    })
-    .catch(error => {
-      console.error('Error checking existing admission:', error.response ? error.response.data : error.message);
-      this.error = 'Failed to check existing admission. Please try again later.';
-    });
-}
+      if (!this.admission.datetime_of_admission) {
+        this.errors.datetime_of_admission = 'Date & Time of Admission is required.';
+        setTimeout(() => {
+            this.error = null;
+          }, 2000);
+        return;
+      }
 
-,
+      // Fetch admissions where patient_id matches
+      axios.get(`http://localhost:8000/api/admissions?patient_id=${this.admission.patient_id}`)
+        .then(response => {
+          // Check if any record has datetime_of_discharge as null
+          const hasOngoingAdmission = response.data.some(admission => admission.patient_id === this.admission.patient_id && admission.datetime_of_discharge === null);
 
+          if (hasOngoingAdmission) {
+            // If any ongoing admission is found, show a message
+            alert('This patient already has an ongoing admission. Cannot create another admission.');
+            setTimeout(() => {
+            this.error = null;
+          }, 5000);
+          } else {
+            // Proceed with creating a new admission if no ongoing admission is found
+            this.createAdmission();
+          }
+        })
+        .catch(error => {
+          console.error('Error checking existing admission:', error.response ? error.response.data : error.message);
+          this.error = 'Failed to check existing admission. Please try again later.';
+        });
+    },
     createAdmission() {
       axios.post('http://localhost:8000/api/admissions', this.admission)
         .then(() => {
-          this.$router.push('/home');
+          this.successMessage = 'Admission successfully created!';
+          this.error = null;
+          setTimeout(() => {
+            this.$router.push('/home');
+          }, 2000); // Redirect after 2 seconds
         })
         .catch(error => {
           console.error('Error creating admission:', error.response ? error.response.data : error.message);
           this.error = 'Failed to create admission. Please try again later.';
+          this.successMessage = null;
         });
     }
   }
@@ -166,5 +203,23 @@ button:hover {
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #f9f9f9;
+}
+
+.success-message {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #28a745;
+  border-radius: 5px;
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.error-message {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #dc3545;
+  border-radius: 5px;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 </style>

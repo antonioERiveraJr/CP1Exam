@@ -27,10 +27,6 @@
           >
             {{ patient.first_name }} {{ patient.last_name }}
           </span>
-          <div class="patient-actions">
-            <router-link :to="{ name: 'PatientEdit', params: { id: patient.id } }" class="btn-edit">Edit</router-link>
-            <button @click="deletePatient(patient.id)" class="btn-delete">Delete</button>
-          </div>
         </div>
         <div v-if="selectedPatient && selectedPatient.id === patient.id && ongoingAdmission" class="admission-info">
           <span><strong>Ward:</strong> {{ ongoingAdmission.ward }}</span>
@@ -85,38 +81,10 @@ export default {
           this.loading = false;
         });
     },
-    fetchOngoingAdmission(patientId) {
-      axios.get(`http://localhost:8000/api/admissions?patient_id=${patientId}`)
-        .then(response => {
-          const ongoingAdmission = response.data.find(admission => !admission.datetime_of_discharge);
-          this.ongoingAdmission = ongoingAdmission || null;
-        })
-        .catch(error => {
-          console.error('Error fetching admissions:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to check admissions. Please try again later.';
-        });
-    },
+    
     handlePatientClick(patient) {
-      this.selectedPatient = patient;
-      this.fetchOngoingAdmission(patient.id);
-      
-      if (this.ongoingAdmission) {
-        // Show ongoing admission details
-        // You might want to set a flag or data property to control the display of this information
-        this.$refs.admissionInfoRef.style.display = 'block'; // Example: showing a hidden element
-      } else {
-        this.$router.push({ name: 'AdmissionCreate', params: { patientId: patient.id } });
-      }
-    },
-    deletePatient(id) {
-      axios.delete(`http://localhost:8000/api/patients/${id}`)
-        .then(() => {
-          this.patients = this.patients.filter(patient => patient.id !== id);
-        })
-        .catch(error => {
-          console.error('Error deleting patient:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to delete patient. Please try again later.';
-        });
+      this.selectedPatient = patient; 
+      this.$router.push({ name: 'PatientDetails', params: { id: patient.id } });
     },
     refreshPatients() {
       this.fetchPatients();
@@ -124,7 +92,7 @@ export default {
   },
   created() {
     this.fetchPatients();
-    this.intervalId = setInterval(this.refreshPatients, 30000); // Refresh every 5 seconds
+    this.intervalId = setInterval(this.refreshPatients, 30000); // Refresh every 30 seconds
   },
   beforeUnmount() {
     clearInterval(this.intervalId); // Clear the interval when the component is unmounted
@@ -213,32 +181,6 @@ export default {
   font-weight: bold;
   cursor: pointer;
   flex: 1;
-}
-
-.patient-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-delete {
-  padding: 5px 25px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-edit {
-  padding: 5px 25px;
-  background-color: #28a745;
-  color: white;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-.btn-delete:hover {
-  background-color: #c82333;
 }
 
 .error-message {

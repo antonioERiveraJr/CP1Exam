@@ -18,21 +18,17 @@
     </div>
 
     <ul v-if="!loading && !showDischarged" class="admission-list-items">
-      <li v-for="admission in filteredActiveAdmissions" :key="admission.id" class="admission-item">
+      <li v-for="admission in filteredActiveAdmissions" :key="admission.id" class="admission-item" @click="navigateToAdmissionDischarge(admission.id)">
         <div class="admission-details">
           <span><strong>Patient ID:</strong> {{ admission.patient_id }}</span>
           <span><strong>Ward:</strong> {{ admission.ward }}</span>
           <span><strong>Admission Date:</strong> {{ formatDate(admission.datetime_of_admission) }}</span>
         </div>
-        <div class="discharge-container">
-          <input v-model="dischargeDateTime" type="datetime-local" />
-          <button @click="dischargeAdmission(admission.id)" class="btn-discharge">Discharge</button>
-        </div>
       </li>
     </ul>
 
     <ul v-if="!loading && showDischarged" class="admission-list-items">
-      <li v-for="admission in filteredDischargedAdmissions" :key="admission.id" class="admission-item">
+      <li v-for="admission in filteredDischargedAdmissions" :key="admission.id" class="admission-item" @click="navigateToAdmissionDischarge(admission.id)">
         <div class="admission-details">
           <span><strong>Patient ID:</strong> {{ admission.patient_id }}</span>
           <span><strong>Ward:</strong> {{ admission.ward }}</span>
@@ -54,16 +50,11 @@ export default {
     return {
       admissions: [],
       error: null,
-      dischargeDateTime: '',
       searchQuery: '',
       showDischarged: false,
       loading: false,
-      intervalId: null, // Added for refresher
+      intervalId: null,
     };
-  },
-  created() {
-    this.fetchAdmissions();
-    this.intervalId = setInterval(this.fetchAdmissions, 30000); // Refresh every 10 seconds
   },
   computed: {
     filteredActiveAdmissions() {
@@ -105,26 +96,6 @@ export default {
           }, 2000);
         });
     },
-    dischargeAdmission(id) {
-      if (this.dischargeDateTime) {
-        axios.patch(`http://localhost:8000/api/admissions/${id}/discharge`, {
-          datetime_of_discharge: this.dischargeDateTime
-        })
-        .then(() => {
-          this.fetchAdmissions();
-          this.dischargeDateTime = '';
-        })
-        .catch(error => {
-          console.error('Error discharging admission:', error.response ? error.response.data : error.message);
-          this.error = 'Failed to discharge admission. Please try again later.';
-        });
-      } else {
-        setTimeout(() => {
-          this.error = null;
-        }, 2000);
-        this.error = 'Please enter a valid discharge date and time.';
-      }
-    },
     goBack() {
       this.$router.push('/home');
     },
@@ -133,7 +104,14 @@ export default {
     },
     searchAdmissions() {
       this.fetchAdmissions();
+    },
+    navigateToAdmissionDischarge(admissionId) {
+      this.$router.push({ name: 'AdmissionDischarge', params: { id: admissionId } });
     }
+  },
+  created() {
+    this.fetchAdmissions();
+    this.intervalId = setInterval(this.fetchAdmissions, 30000); // Refresh every 30 seconds
   },
   beforeUnmount() {
     clearInterval(this.intervalId); // Clean up the interval on component unmount
@@ -155,7 +133,7 @@ export default {
   position: relative;
 }
 
-.btn-back, .btn-search, .btn-toggle, .btn-discharge {
+.btn-back, .btn-search, .btn-toggle {
   margin-bottom: 10px;
   padding: 8px 12px;
   border: none;
@@ -179,15 +157,6 @@ export default {
 
 .btn-search:hover, .btn-toggle:hover {
   background-color: #218838;
-}
-
-.btn-discharge {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-discharge:hover {
-  background-color: #c82333;
 }
 
 .search-container {
@@ -228,6 +197,7 @@ export default {
   margin-bottom: 10px;
   background-color: #fff;
   transition: background-color 0.3s;
+  cursor: pointer;
 }
 
 .admission-item:hover {
@@ -238,15 +208,6 @@ export default {
   display: flex;
   flex-direction: column;
   font-size: 16px;
-}
-
-.discharge-container {
-  display: flex;
-  align-items: center;
-}
-
-.discharge-container input {
-  margin-right: 10px;
 }
 
 .error-message {

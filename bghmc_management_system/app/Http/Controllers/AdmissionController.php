@@ -72,11 +72,8 @@ class AdmissionController extends Controller
             'datetime_of_discharge' => 'required|date',
         ]);
 
-        if ($admission) {
-            $admission->update(['datetime_of_discharge' => $validatedData['datetime_of_discharge']]);
-            return response()->json($admission, 200);
-        } else {
-            return response()->json(['message' => 'Admission not found'], 404);
-        }
+        $admission->update(['datetime_of_discharge' => $validatedData['datetime_of_discharge']]);
+
+        return response()->json($admission, 200);
     }
 }

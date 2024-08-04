@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';  
+import { createRouter, createWebHistory } from 'vue-router';
 import PatientList from './components/PatientList.vue';
 import PatientCreate from './components/PatientCreate.vue';
 import PatientEdit from './components/PatientEdit.vue';
@@ -7,7 +7,8 @@ import AdmissionList from './components/AdmissionList.vue';
 import AdmissionCreate from './components/AdmissionCreate.vue';
 import AdmissionDischarge from './components/AdmissionDischarge.vue';
 import HomePage from './components/HomePage.vue';
-import UserLogin  from './components/UserLogin.vue';
+import UserLogin from './components/UserLogin.vue';
+import PatientDetails from './components/PatientDetails.vue';
 
 // Define your routes
 const routes = [
@@ -20,7 +21,7 @@ const routes = [
     path: '/home',
     name: 'HomePage',
     component: HomePage,
-  }, 
+  },
   {
     path: '/patients',
     name: 'PatientList',
@@ -44,14 +45,15 @@ const routes = [
     props: true,
   },
   {
+    path: '/patients/details/:id',
+    name: 'PatientDetails',
+    component: PatientDetails,
+    props: true,
+  },
+  {
     path: '/admissions',
     name: 'AdmissionList',
     component: AdmissionList,
-  },
-  {
-    path: '/admissions/create',
-    name: 'AdmissionCreate',
-    component: AdmissionCreate,
   },
   {
     path: '/admissions/create/:patientId?',
@@ -73,10 +75,9 @@ const router = createRouter({
   routes,
 });
 
-
 // Add a navigation guard for authentication
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/', '/register'];
+  const publicPages = ['/'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('user');
 

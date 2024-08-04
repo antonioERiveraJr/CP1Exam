@@ -34,3 +34,5 @@ Route::patch('/admissions/{admission}/discharge', [AdmissionController::class, '
 Route::get('admissions', [AdmissionController::class, 'index']);
 Route::post('admissions', [AdmissionController::class, 'store']);
 Route::patch('admissions/{id}/discharge', [AdmissionController::class, 'discharge']);
+
+
