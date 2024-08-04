@@ -23,7 +23,7 @@
       </div>
 
       <div class="discharge-container" v-if="!admission.datetime_of_discharge">
-        <input v-model="dischargeDateTime" type="datetime-local" />
+        <input v-model="dischargeDateTime" type="datetime-local" class="discharge-datetime" />
         <button @click="dischargeAdmission" class="btn-discharge">Discharge</button>
       </div>
     </div>
@@ -116,7 +116,7 @@ export default {
 
 .btn-back, .btn-discharge {
   margin-bottom: 10px;
-  padding: 8px 12px;
+  padding: 12px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -184,7 +184,17 @@ export default {
 .discharge-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.discharge-datetime {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #fff;
 }
 
 @keyframes spin {
