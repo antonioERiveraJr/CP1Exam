@@ -16,7 +16,7 @@
       </div>
       <div class="form-group">
         <label for="suffix_name">Suffix Name:</label>
-        <input v-model="patient.suffix_name" type="text" id="suffix_name" placeholder="Enter suffix name" />
+        <input v-model="patient.suffix_name" type="text" id="suffix_name" placeholder="Enter suffix name (Jr., Sr., II, III)" />
       </div>
       <div class="form-group">
         <label for="date_of_birth">Date of Birth:</label>

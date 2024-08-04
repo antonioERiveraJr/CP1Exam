@@ -102,20 +102,21 @@ export default {
 
 <style scoped>
 .patient-list {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 20px;
-  padding: 10px;
+  padding: 20px;
 }
 
 .btn-back {
-  padding: 10px 15px;
+  padding: 12px 20px;
   background-color: #6c757d;
   color: white;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
   display: inline-block;
   margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .btn-back:hover {
@@ -124,34 +125,46 @@ export default {
 
 .admission-info {
   margin-top: 10px;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .patient-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .search-input {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-right: 10px;
+  border-radius: 8px;
+  margin-right: 15px;
   flex: 1;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 .btn-create {
-  padding: 10px 15px;
+  padding: 12px 20px;
   background-color: #007bff;
   color: white;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-create:hover {
+  background-color: #0056b3;
 }
 
 .patient-list-items {
@@ -163,10 +176,18 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.patient-item:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .patient-details {
@@ -177,15 +198,21 @@ export default {
 }
 
 .patient-name {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   flex: 1;
+  transition: color 0.3s ease;
+}
+
+.patient-name:hover {
+  color: #007bff;
 }
 
 .error-message {
   color: #dc3545;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-size: 16px;
 }
 
 .loading-spinner {
@@ -193,13 +220,13 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  font-size: 16px;
+  font-size: 18px;
   color: #007bff;
 }
 
 .spinner {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border: 4px solid rgba(0, 123, 255, 0.3);
   border-top: 4px solid #007bff;
   border-radius: 50%;

@@ -135,19 +135,22 @@ export default {
 
 .btn-back, .btn-search, .btn-toggle {
   margin-bottom: 10px;
-  padding: 8px 12px;
+  padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .btn-back {
-  background-color: #007bff;
+  background-color: #dc3545;
   color: white;
 }
 
 .btn-back:hover {
-  background-color: #0056b3;
+  background-color: #c82333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .btn-search, .btn-toggle {
@@ -157,29 +160,38 @@ export default {
 
 .btn-search:hover, .btn-toggle:hover {
   background-color: #218838;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .search-container {
   margin-bottom: 20px;
   display: flex;
+  align-items: center;
 }
 
 .search-container input {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
   flex: 1;
   margin-right: 10px;
+  font-size: 16px;
 }
 
 .search-container button {
-  padding: 8px 12px;
+  padding: 10px 15px;
   background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .search-container button:hover {
   background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .admission-list-items {
@@ -191,17 +203,18 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   margin-bottom: 10px;
   background-color: #fff;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.3s;
   cursor: pointer;
 }
 
 .admission-item:hover {
   background-color: #f1f1f1;
+  transform: scale(1.02);
 }
 
 .admission-details {
